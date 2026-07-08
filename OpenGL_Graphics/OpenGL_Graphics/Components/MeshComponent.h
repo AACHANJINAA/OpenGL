@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Component.h"
 #include <string>
 #include <vector>
@@ -9,7 +9,7 @@ struct VERTEX {
     glm::vec3 _color;
 };
 
-class MESH_COMPONENT : public COMPONENT {
+class MESHCOMPONENT : public COMPONENT {
 private:
     unsigned int _vao = 0;
     unsigned int _vbo = 0;
@@ -18,11 +18,11 @@ private:
     std::vector<unsigned int> _indices;
     std::string _shader_name;
 
-public:
-    MESH_COMPONENT(const std::string& shader_name);
-    ~MESH_COMPONENT() override;
+    void set_mesh();
 
-    void setup_mesh();
+public:
+    MESHCOMPONENT(const std::string& shader_name);
+    ~MESHCOMPONENT() override;
 
     void initialize() override;
     void render() override;

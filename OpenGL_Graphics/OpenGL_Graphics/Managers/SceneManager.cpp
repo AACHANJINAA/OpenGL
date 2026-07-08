@@ -1,39 +1,39 @@
 #include "SceneManager.h"
 #include "../Entities/GameObject.h"
 
-SCENE_MANAGER& SCENE_MANAGER::get_instance() {
-    static SCENE_MANAGER instance;
+SCENEMANAGER& SCENEMANAGER::get_instance() {
+    static SCENEMANAGER instance;
     return instance;
 }
 
-std::shared_ptr<GAME_OBJECT> SCENE_MANAGER::create_game_object() {
-    auto go = std::make_shared<GAME_OBJECT>();
-    _game_objects.push_back(go);
+std::shared_ptr<GAMEOBJECT> SCENEMANAGER::create_gameobject() {
+    auto go = std::make_shared<GAMEOBJECT>();
+    _gameobjects.push_back(go);
     return go;
 }
 
-void SCENE_MANAGER::add_game_object(const std::shared_ptr<GAME_OBJECT>& go) {
-    _game_objects.push_back(go);
+void SCENEMANAGER::add_gameobject(const std::shared_ptr<GAMEOBJECT>& go) {
+    _gameobjects.push_back(go);
 }
 
-void SCENE_MANAGER::initialize() {
-    for (size_t i = 0; i < _game_objects.size(); ++i) {
-        _game_objects[i]->initialize();
+void SCENEMANAGER::initialize() {
+    for (size_t i = 0; i < _gameobjects.size(); ++i) {
+        _gameobjects[i]->initialize();
     }
 }
 
-void SCENE_MANAGER::update(float delta_time) {
-    for (size_t i = 0; i < _game_objects.size(); ++i) {
-        _game_objects[i]->update(delta_time);
+void SCENEMANAGER::update(float delta_time) {
+    for (size_t i = 0; i < _gameobjects.size(); ++i) {
+        _gameobjects[i]->update(delta_time);
     }
 }
 
-void SCENE_MANAGER::render() {
-    for (size_t i = 0; i < _game_objects.size(); ++i) {
-        _game_objects[i]->render();
+void SCENEMANAGER::render() {
+    for (size_t i = 0; i < _gameobjects.size(); ++i) {
+        _gameobjects[i]->render();
     }
 }
 
-void SCENE_MANAGER::clear() {
-    _game_objects.clear();
+void SCENEMANAGER::clear() {
+    _gameobjects.clear();
 }

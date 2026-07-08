@@ -2,22 +2,22 @@
 #include <vector>
 #include <memory>
 
-class GAME_OBJECT;
+class GAMEOBJECT;
 
-class SCENE_MANAGER {
+class SCENEMANAGER {
 private:
-    std::vector<std::shared_ptr<GAME_OBJECT>> _game_objects;
+    std::vector<std::shared_ptr<GAMEOBJECT>> _gameobjects;
 
-    SCENE_MANAGER() = default;
-    ~SCENE_MANAGER() = default;
-    SCENE_MANAGER(const SCENE_MANAGER&) = delete;
-    SCENE_MANAGER& operator=(const SCENE_MANAGER&) = delete;
+    SCENEMANAGER() = default;
+    ~SCENEMANAGER() = default;
+    SCENEMANAGER(const SCENEMANAGER&) = delete;
+    SCENEMANAGER& operator=(const SCENEMANAGER&) = delete;
 
 public:
-    static SCENE_MANAGER& get_instance();
+    static SCENEMANAGER& get_instance();
 
-    std::shared_ptr<GAME_OBJECT> create_game_object();
-    void add_game_object(const std::shared_ptr<GAME_OBJECT>& go);
+    std::shared_ptr<GAMEOBJECT> create_gameobject();
+    void add_gameobject(const std::shared_ptr<GAMEOBJECT>& go);
 
     void initialize();
     void update(float delta_time);

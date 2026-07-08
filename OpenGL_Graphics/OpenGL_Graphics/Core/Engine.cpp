@@ -17,8 +17,8 @@ ENGINE::ENGINE(int width, int height, const std::string& title)
     : _width(width), _height(height), _title(title) {}
 
 ENGINE::~ENGINE() {
-    RESOURCE_MANAGER::get_instance().clear();
-    SCENE_MANAGER::get_instance().clear();
+    RESOURCEMANAGER::get_instance().clear();
+    SCENEMANAGER::get_instance().clear();
     if (_window) {
         glfwDestroyWindow(_window);
     }
@@ -83,8 +83,8 @@ void ENGINE::process_input() {
 }
 
 void ENGINE::run() {
-    // Initialize SceneManager
-    SCENE_MANAGER::get_instance().initialize();
+    // Initialize SCENEMANAGER
+    SCENEMANAGER::get_instance().initialize();
 
     _last_frame = static_cast<float>(glfwGetTime());
 
@@ -106,7 +106,7 @@ void ENGINE::run() {
         glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
 
         // Set view and projection uniforms
-        auto shader = RESOURCE_MANAGER::get_instance().get_shader("cubeShader");
+        auto shader = RESOURCEMANAGER::get_instance().get_shader("cubeShader");
         if (shader) {
             shader->use();
             shader->set_mat4("projection", projection);
@@ -114,8 +114,8 @@ void ENGINE::run() {
         }
 
         // Update and render components
-        SCENE_MANAGER::get_instance().update(_delta_time);
-        SCENE_MANAGER::get_instance().render();
+        SCENEMANAGER::get_instance().update(_delta_time);
+        SCENEMANAGER::get_instance().render();
 
         // Swap buffers and poll events
         glfwSwapBuffers(_window);

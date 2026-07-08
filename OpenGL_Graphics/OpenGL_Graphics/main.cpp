@@ -6,18 +6,18 @@
 #include "Components/MeshComponent.h"
 #include <iostream>
 
-// ROTATOR_COMPONENT defined to show the power of the component design pattern.
-class ROTATOR_COMPONENT : public COMPONENT {
+// ROTATORCOMPONENT defined to show the power of the component design pattern.
+class ROTATORCOMPONENT : public COMPONENT {
 private:
     float _speed_x;
     float _speed_y;
 
 public:
-    ROTATOR_COMPONENT(float speed_x = 45.0f, float speed_y = 30.0f)
+    ROTATORCOMPONENT(float speed_x = 45.0f, float speed_y = 30.0f)
         : _speed_x(speed_x), _speed_y(speed_y) {}
 
     void update(float delta_time) override {
-        auto transform = _owner->get_component<TRANSFORM_COMPONENT>();
+        auto transform = _owner->get_component<TRANSFORMCOMPONENT>();
         if (transform) {
             transform->_rotation.x += _speed_x * delta_time;
             transform->_rotation.y += _speed_y * delta_time;
@@ -37,25 +37,25 @@ int main() {
         return -1;
     }
 
-    // 1. Load shader using ResourceManager
-    RESOURCE_MANAGER::get_instance().load_shader("cubeShader", "Shaders/cube.vs", "Shaders/cube.fs");
+    // 1. Load shader using RESOURCEMANAGER
+    RESOURCEMANAGER::get_instance().load_shader("cubeShader", "Shaders/cube.vs", "Shaders/cube.fs");
 
-    // 2. Create GameObject using SceneManager
-    auto cube_object = SCENE_MANAGER::get_instance().create_game_object();
+    // 2. Create GAMEOBJECT using SCENEMANAGER
+    auto cube_gameobject = SCENEMANAGER::get_instance().create_gameobject();
 
     // 3. Add components
-    // 3-1. Add TRANSFORM_COMPONENT
-    cube_object->add_component<TRANSFORM_COMPONENT>(
+    // 3-1. Add TRANSFORMCOMPONENT
+    cube_gameobject->add_component<TRANSFORMCOMPONENT>(
         glm::vec3(0.0f, 0.0f, 0.0f),   // Position (center)
         glm::vec3(20.0f, 30.0f, 0.0f),  // Initial rotation
         glm::vec3(1.0f, 1.0f, 1.0f)    // Scale
     );
 
-    // 3-2. Add MESH_COMPONENT
-    cube_object->add_component<MESH_COMPONENT>("cubeShader");
+    // 3-2. Add MESHCOMPONENT
+    cube_gameobject->add_component<MESHCOMPONENT>("cubeShader");
 
-    // 3-3. Add ROTATOR_COMPONENT (automatic rotation)
-    cube_object->add_component<ROTATOR_COMPONENT>(50.0f, 35.0f);
+    // 3-3. Add ROTATORCOMPONENT (automatic rotation)
+    cube_gameobject->add_component<ROTATORCOMPONENT>(50.0f, 35.0f);
 
     // 4. Run engine main loop
     engine.run();

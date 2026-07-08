@@ -3,13 +3,13 @@
 #include <memory>
 #include "../Components/Component.h"
 
-class GAME_OBJECT {
+class GAMEOBJECT {
 private:
     std::vector<std::unique_ptr<COMPONENT>> _components;
 
 public:
-    GAME_OBJECT() = default;
-    ~GAME_OBJECT() = default;
+    GAMEOBJECT() = default;
+    ~GAMEOBJECT() = default;
 
     void initialize();
     void update(float delta_time);

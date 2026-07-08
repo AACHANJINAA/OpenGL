@@ -6,16 +6,16 @@
 #include <GL/glew.h>
 #include <iostream>
 
-MESH_COMPONENT::MESH_COMPONENT(const std::string& shader_name)
+MESHCOMPONENT::MESHCOMPONENT(const std::string& shader_name)
     : _shader_name(shader_name), _vao(0), _vbo(0), _ebo(0) {}
 
-MESH_COMPONENT::~MESH_COMPONENT() {
+MESHCOMPONENT::~MESHCOMPONENT() {
     if (_vao != 0) glDeleteVertexArrays(1, &_vao);
     if (_vbo != 0) glDeleteBuffers(1, &_vbo);
     if (_ebo != 0) glDeleteBuffers(1, &_ebo);
 }
 
-void MESH_COMPONENT::initialize() {
+void MESHCOMPONENT::initialize() {
     // 3D Rainbow Cube vertices (position, color)
     _vertices = {
         // Front
@@ -40,10 +40,10 @@ void MESH_COMPONENT::initialize() {
         4, 5, 1, 1, 0, 4  // Bottom
     };
 
-    setup_mesh();
+    set_mesh();
 }
 
-void MESH_COMPONENT::setup_mesh() {
+void MESHCOMPONENT::set_mesh() {
     glGenVertexArrays(1, &_vao);
     glGenBuffers(1, &_vbo);
     glGenBuffers(1, &_ebo);
@@ -67,14 +67,14 @@ void MESH_COMPONENT::setup_mesh() {
     glBindVertexArray(0);
 }
 
-void MESH_COMPONENT::render() {
-    auto shader = RESOURCE_MANAGER::get_instance().get_shader(_shader_name);
+void MESHCOMPONENT::render() {
+    auto shader = RESOURCEMANAGER::get_instance().get_shader(_shader_name);
     if (!shader) {
-        std::cerr << "MESH_COMPONENT Error: Shader " << _shader_name << " not found in RESOURCE_MANAGER." << std::endl;
+        std::cerr << "MESHCOMPONENT Error: Shader " << _shader_name << " not found in RESOURCEMANAGER." << std::endl;
         return;
     }
 
-    auto transform = _owner->get_component<TRANSFORM_COMPONENT>();
+    auto transform = _owner->get_component<TRANSFORMCOMPONENT>();
     glm::mat4 model = (transform != nullptr) ? transform->get_model_matrix() : glm::mat4(1.0f);
 
     shader->use();

@@ -1,10 +1,10 @@
 #pragma once
 
-class GAME_OBJECT;
+class GAMEOBJECT;
 
 class COMPONENT {
 protected:
-    GAME_OBJECT* _owner = nullptr;
+    GAMEOBJECT* _owner = nullptr;
 
 public:
     virtual ~COMPONENT() = default;
@@ -13,6 +13,6 @@ public:
     virtual void update(float delta_time) {}
     virtual void render() {}
 
-    void set_owner(GAME_OBJECT* go) { _owner = go; }
-    GAME_OBJECT* get_owner() const { return _owner; }
+    void set_owner(GAMEOBJECT* go) { _owner = go; }
+    GAMEOBJECT* get_owner() const { return _owner; }
 };
