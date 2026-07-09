@@ -1,101 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="소스 파일">
+    <Filter Include="0. Engine">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="헤더 파일">
+    <Filter Include="1. Manager">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="리소스 파일">
+    <Filter Include="2. Component">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="3. Entity">
+      <UniqueIdentifier>{7a514d28-7cc1-4fb2-bd74-e8180d500c5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="4. Shader">
+      <UniqueIdentifier>{8c7e63b1-4ebc-4a30-8a1a-7b3b44b806d2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Components\Component.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Components\KeyboardController.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Components\MeshComponent.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Components\TransformComponent.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="stdafx.h">
+      <Filter>0. Engine</Filter>
     </ClInclude>
     <ClInclude Include="Core\Engine.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>0. Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\GameFramework.h">
+      <Filter>0. Engine</Filter>
     </ClInclude>
     <ClInclude Include="Core\Shader.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Entities\GameObject.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Managers\CameraManager.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="Managers\InputManager.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>0. Engine</Filter>
     </ClInclude>
     <ClInclude Include="Managers\ResourceManager.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>1. Manager</Filter>
     </ClInclude>
     <ClInclude Include="Managers\SceneManager.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>1. Manager</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>헤더 파일</Filter>
+    <ClInclude Include="Managers\InputManager.h">
+      <Filter>1. Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Managers\CameraManager.h">
+      <Filter>1. Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\Component.h">
+      <Filter>2. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\TransformComponent.h">
+      <Filter>2. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\MeshComponent.h">
+      <Filter>2. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Components\KeyboardController.h">
+      <Filter>2. Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities\GameObject.h">
+      <Filter>3. Entity</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Components\KeyboardController.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Components\MeshComponent.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Components\TransformComponent.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>0. Engine</Filter>
     </ClCompile>
     <ClCompile Include="Core\Engine.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>0. Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\GameFramework.cpp">
+      <Filter>0. Engine</Filter>
     </ClCompile>
     <ClCompile Include="Core\Shader.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Entities\GameObject.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Managers\CameraManager.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="Managers\InputManager.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>0. Engine</Filter>
     </ClCompile>
     <ClCompile Include="Managers\ResourceManager.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>1. Manager</Filter>
     </ClCompile>
     <ClCompile Include="Managers\SceneManager.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>1. Manager</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="Managers\InputManager.cpp">
+      <Filter>1. Manager</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>소스 파일</Filter>
+    <ClCompile Include="Managers\CameraManager.cpp">
+      <Filter>1. Manager</Filter>
     </ClCompile>
+    <ClCompile Include="Components\TransformComponent.cpp">
+      <Filter>2. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\MeshComponent.cpp">
+      <Filter>2. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Components\KeyboardController.cpp">
+      <Filter>2. Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Entities\GameObject.cpp">
+      <Filter>3. Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\cube.fs">
-      <Filter>리소스 파일</Filter>
+      <Filter>4. Shader</Filter>
     </None>
     <None Include="Shaders\cube.vs">
-      <Filter>리소스 파일</Filter>
+      <Filter>4. Shader</Filter>
     </None>
   </ItemGroup>
 </Project>

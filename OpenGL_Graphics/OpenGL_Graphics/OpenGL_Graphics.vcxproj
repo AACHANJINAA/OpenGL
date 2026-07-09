@@ -165,6 +165,7 @@
     <ClInclude Include="Components\MeshComponent.h" />
     <ClInclude Include="Components\TransformComponent.h" />
     <ClInclude Include="Core\Engine.h" />
+    <ClInclude Include="Core\GameFramework.h" />
     <ClInclude Include="Core\Shader.h" />
     <ClInclude Include="Entities\GameObject.h" />
     <ClInclude Include="Managers\CameraManager.h" />
@@ -178,6 +179,7 @@
     <ClCompile Include="Components\MeshComponent.cpp" />
     <ClCompile Include="Components\TransformComponent.cpp" />
     <ClCompile Include="Core\Engine.cpp" />
+    <ClCompile Include="Core\GameFramework.cpp" />
     <ClCompile Include="Core\Shader.cpp" />
     <ClCompile Include="Entities\GameObject.cpp" />
     <ClCompile Include="Managers\CameraManager.cpp" />

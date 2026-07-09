@@ -121,18 +121,6 @@ void ENGINE::run() {
         glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Calculate projection and view matrices using CAMERAMANAGER
-        glm::mat4 projection = CAMERAMANAGER::get_instance().get_projection_matrix((float)_width / (float)_height);
-        glm::mat4 view = CAMERAMANAGER::get_instance().get_view_matrix();
-
-        // Set view and projection uniforms
-        auto shader = RESOURCEMANAGER::get_instance().get_shader("cubeShader");
-        if (shader) {
-            shader->use();
-            shader->set_mat4("projection", projection);
-            shader->set_mat4("view", view);
-        }
-
         // Update, late update and render components
         SCENEMANAGER::get_instance().update(_delta_time);
         SCENEMANAGER::get_instance().late_update(_delta_time);

@@ -3,6 +3,7 @@
 #include "TransformComponent.h"
 #include "../Entities/GameObject.h"
 #include "../Managers/ResourceManager.h"
+#include "../Managers/CameraManager.h"
 #include "../Core/Shader.h"
 
 MESHCOMPONENT::MESHCOMPONENT(const std::string& shader_name)
@@ -76,7 +77,18 @@ void MESHCOMPONENT::render() {
     auto transform = _owner->get_component<TRANSFORMCOMPONENT>();
     glm::mat4 model = (transform != nullptr) ? transform->get_model_matrix() : glm::mat4(1.0f);
 
+    // Query dynamic viewport dimension to compute aspect ratio
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    float aspect_ratio = (viewport[2] > 0 && viewport[3] > 0) ? (float)viewport[2] / (float)viewport[3] : 1.0f;
+
+    // Retrieve projection and view matrices from CAMERAMANAGER
+    glm::mat4 projection = CAMERAMANAGER::get_instance().get_projection_matrix(aspect_ratio);
+    glm::mat4 view = CAMERAMANAGER::get_instance().get_view_matrix();
+
     shader->use();
+    shader->set_mat4("projection", projection);
+    shader->set_mat4("view", view);
     shader->set_mat4("model", model);
 
     glBindVertexArray(_vao);
