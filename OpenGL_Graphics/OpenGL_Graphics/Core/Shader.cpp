@@ -1,9 +1,5 @@
+#include "stdafx.h"
 #include "Shader.h"
-#include <GL/glew.h>
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <glm/gtc/type_ptr.hpp>
 
 SHADER::SHADER(const std::string& vertex_path, const std::string& fragment_path) {
     std::string vertex_code;

@@ -1,11 +1,9 @@
+#include "stdafx.h"
 #include "Engine.h"
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <iostream>
 #include "../Managers/SceneManager.h"
 #include "../Managers/ResourceManager.h"
+#include "../Managers/InputManager.h"
+#include "../Managers/CameraManager.h"
 #include "Shader.h"
 
 // GLFW window size callback
@@ -73,11 +71,14 @@ bool ENGINE::initialize() {
     if (!initialize_glfw()) return false;
     if (!initialize_opengl()) return false;
 
+    // Initialize InputManager with the GLFW window context
+    INPUTMANAGER::get_instance().initialize(_window);
+
     return true;
 }
 
 void ENGINE::process_input() {
-    if (glfwGetKey(_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    if (INPUTMANAGER::get_instance().is_key_pressed(GLFW_KEY_ESCAPE)) {
         glfwSetWindowShouldClose(_window, true);
     }
 }
@@ -120,9 +121,9 @@ void ENGINE::run() {
         glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // Calculate projection and view matrices
-        glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)_width / (float)_height, 0.1f, 100.0f);
-        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+        // Calculate projection and view matrices using CAMERAMANAGER
+        glm::mat4 projection = CAMERAMANAGER::get_instance().get_projection_matrix((float)_width / (float)_height);
+        glm::mat4 view = CAMERAMANAGER::get_instance().get_view_matrix();
 
         // Set view and projection uniforms
         auto shader = RESOURCEMANAGER::get_instance().get_shader("cubeShader");

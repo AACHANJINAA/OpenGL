@@ -1,10 +1,9 @@
+#include "stdafx.h"
 #include "MeshComponent.h"
 #include "TransformComponent.h"
 #include "../Entities/GameObject.h"
 #include "../Managers/ResourceManager.h"
 #include "../Core/Shader.h"
-#include <GL/glew.h>
-#include <iostream>
 
 MESHCOMPONENT::MESHCOMPONENT(const std::string& shader_name)
     : _shader_name(shader_name), _vao(0), _vbo(0), _ebo(0) {}

@@ -1,6 +1,6 @@
+#include "stdafx.h"
 #include "ResourceManager.h"
 #include "../Core/Shader.h"
-#include <iostream>
 
 RESOURCEMANAGER& RESOURCEMANAGER::get_instance() {
     static RESOURCEMANAGER instance;
