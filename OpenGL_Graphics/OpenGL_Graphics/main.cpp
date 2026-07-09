@@ -4,7 +4,7 @@
 int main() {
     auto& app = GAMEFRAMEWORK::get_instance();
 
-    if (!app.initialize(1920, 1200, "OpenGL 3D Rainbow Cube (Manager-Component)")) {
+    if (!app.initialize(1920, 1200, "OpenGL Renderer")) {
         return -1;
     }
 
