@@ -24,6 +24,6 @@ public:
     MESHCOMPONENT(const std::string& shader_name);
     ~MESHCOMPONENT() override;
 
-    void initialize() override;
+    void start() override;
     void render() override;
 };

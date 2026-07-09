@@ -3,7 +3,7 @@
 TRANSFORMCOMPONENT::TRANSFORMCOMPONENT(const glm::vec3& pos, const glm::vec3& rot, const glm::vec3& scl)
     : _position(pos), _rotation(rot), _scale(scl) {}
 
-void TRANSFORMCOMPONENT::initialize() {}
+void TRANSFORMCOMPONENT::start() {}
 
 void TRANSFORMCOMPONENT::update(float delta_time) {}
 

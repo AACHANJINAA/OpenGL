@@ -1,4 +1,4 @@
-#include "Core/Engine.h"
+﻿#include "Core/Engine.h"
 #include "Managers/ResourceManager.h"
 #include "Managers/SceneManager.h"
 #include "Entities/GameObject.h"
@@ -68,7 +68,7 @@ public:
 };
 
 int main() {
-    ENGINE engine(800, 600, "OpenGL 3D Rainbow Cube (Manager-Component)");
+    ENGINE engine(1920, 1200, "Renderer");
 
     if (!engine.initialize()) {
         std::cerr << "Engine initialization failed!" << std::endl;

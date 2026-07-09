@@ -83,16 +83,35 @@ void ENGINE::process_input() {
 }
 
 void ENGINE::run() {
-    // Initialize SCENEMANAGER
-    SCENEMANAGER::get_instance().initialize();
+    // Start SCENEMANAGER
+    SCENEMANAGER::get_instance().start();
 
     _last_frame = static_cast<float>(glfwGetTime());
+
+    double time_accumulator = 0.0;
+    int frame_count = 0;
 
     while (!glfwWindowShouldClose(_window)) {
         // Calculate delta time
         float current_frame = static_cast<float>(glfwGetTime());
         _delta_time = current_frame - _last_frame;
         _last_frame = current_frame;
+
+        // FPS calculation & window title update
+        frame_count++;
+        time_accumulator += _delta_time;
+        if (time_accumulator >= 1.0) {
+            double fps = static_cast<double>(frame_count) / time_accumulator;
+            double ms = (time_accumulator / static_cast<double>(frame_count)) * 1000.0;
+            
+            char title_buf[128];
+            snprintf(title_buf, sizeof(title_buf), "%s | FPS: %d (%.2f ms)", _title.c_str(), static_cast<int>(fps), ms);
+            glfwSetWindowTitle(_window, title_buf);
+
+            // Reset
+            frame_count = 0;
+            time_accumulator = 0.0;
+        }
 
         // Process input
         process_input();
@@ -113,12 +132,16 @@ void ENGINE::run() {
             shader->set_mat4("view", view);
         }
 
-        // Update and render components
+        // Update, late update and render components
         SCENEMANAGER::get_instance().update(_delta_time);
+        SCENEMANAGER::get_instance().late_update(_delta_time);
         SCENEMANAGER::get_instance().render();
 
         // Swap buffers and poll events
         glfwSwapBuffers(_window);
         glfwPollEvents();
     }
+
+    // End SCENEMANAGER
+    SCENEMANAGER::get_instance().end();
 }

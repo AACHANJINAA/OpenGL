@@ -15,7 +15,7 @@ MESHCOMPONENT::~MESHCOMPONENT() {
     if (_ebo != 0) glDeleteBuffers(1, &_ebo);
 }
 
-void MESHCOMPONENT::initialize() {
+void MESHCOMPONENT::start() {
     // 3D Rainbow Cube vertices (position, color)
     _vertices = {
         // Front

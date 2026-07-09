@@ -19,8 +19,10 @@ public:
     std::shared_ptr<GAMEOBJECT> create_gameobject();
     void add_gameobject(const std::shared_ptr<GAMEOBJECT>& go);
 
-    void initialize();
+    void start();
     void update(float delta_time);
+    void late_update(float delta_time);
     void render();
+    void end();
     void clear();
 };

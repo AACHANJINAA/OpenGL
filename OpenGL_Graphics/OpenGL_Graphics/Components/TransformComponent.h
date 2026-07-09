@@ -13,7 +13,7 @@ public:
                        const glm::vec3& rot = glm::vec3(0.0f),
                        const glm::vec3& scl = glm::vec3(1.0f));
 
-    void initialize() override;
+    void start() override;
     void update(float delta_time) override;
 
     glm::mat4 get_model_matrix() const;

@@ -11,9 +11,11 @@ public:
     GAMEOBJECT() = default;
     ~GAMEOBJECT() = default;
 
-    void initialize();
+    void start();
     void update(float delta_time);
+    void late_update(float delta_time);
     void render();
+    void end();
 
     template<typename T, typename... Args>
     T* add_component(Args&&... args) {
