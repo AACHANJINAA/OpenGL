@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "GameFramework.h"
 #include "../Managers/ResourceManager.h"
 #include "../Managers/SceneManager.h"
@@ -20,8 +20,15 @@ bool GAMEFRAMEWORK::initialize(int width, int height, const std::string& title) 
         return false;
     }
 
+    set_cube();
+
+    return true;
+}
+
+void GAMEFRAMEWORK::set_cube()
+{
     // 2. Setup game resources (Shaders, GameObjects, Components)
-    // 2-1. Load shader
+   // 2-1. Load shader
     RESOURCEMANAGER::get_instance().load_shader("cubeShader", "Shaders/cube.vs", "Shaders/cube.fs");
 
     // 2-2. Create main Rainbow Cube game object
@@ -36,11 +43,9 @@ bool GAMEFRAMEWORK::initialize(int width, int height, const std::string& title) 
     cube_gameobject->add_component<MESHCOMPONENT>("cubeShader");
     cube_gameobject->add_component<KEYBOARDCONTROLLER>(2.0f, 90.0f);
 
-    return true;
 }
 
 void GAMEFRAMEWORK::run() {
-    if (_engine) {
+    if (_engine) 
         _engine->run();
-    }
 }

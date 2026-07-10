@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "ResourceManager.h"
 #include "../Core/Shader.h"
 
@@ -22,5 +22,5 @@ std::shared_ptr<SHADER> RESOURCEMANAGER::get_shader(const std::string& name) {
 }
 
 void RESOURCEMANAGER::clear() {
-    _shaders.clear();
+
 }

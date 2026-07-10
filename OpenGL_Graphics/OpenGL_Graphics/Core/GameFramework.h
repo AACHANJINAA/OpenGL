@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Engine.h"
 
 class GAMEFRAMEWORK {
@@ -14,5 +14,6 @@ public:
     static GAMEFRAMEWORK& get_instance();
 
     bool initialize(int width, int height, const std::string& title);
+    void set_cube();
     void run();
 };
