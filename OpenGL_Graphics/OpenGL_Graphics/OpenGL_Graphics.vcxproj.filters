@@ -16,12 +16,18 @@
     <Filter Include="4. Shader">
       <UniqueIdentifier>{8c7e63b1-4ebc-4a30-8a1a-7b3b44b806d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="5. ImGui">
+      <UniqueIdentifier>{6d817f54-5c91-4770-b499-e4d0d6fb05d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
       <Filter>0. Engine</Filter>
     </ClInclude>
     <ClInclude Include="Core\Engine.h">
+      <Filter>0. Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\EditorPanel.h">
       <Filter>0. Engine</Filter>
     </ClInclude>
     <ClInclude Include="Core\GameFramework.h">
@@ -45,6 +51,9 @@
     <ClInclude Include="Components\Component.h">
       <Filter>2. Component</Filter>
     </ClInclude>
+    <ClInclude Include="Components\GeometryGenerator.h">
+      <Filter>2. Component</Filter>
+    </ClInclude>
     <ClInclude Include="Components\TransformComponent.h">
       <Filter>2. Component</Filter>
     </ClInclude>
@@ -57,12 +66,42 @@
     <ClInclude Include="Entities\GameObject.h">
       <Filter>3. Entity</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\imgui\imconfig.h">
+      <Filter>5. ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imgui\imgui.h">
+      <Filter>5. ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imgui\imgui_internal.h">
+      <Filter>5. ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imgui\imstb_rectpack.h">
+      <Filter>5. ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imgui\imstb_textedit.h">
+      <Filter>5. ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imgui\imstb_truetype.h">
+      <Filter>5. ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imgui\backends\imgui_impl_glfw.h">
+      <Filter>5. ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imgui\backends\imgui_impl_opengl3.h">
+      <Filter>5. ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ThirdParty\imgui\backends\imgui_impl_opengl3_loader.h">
+      <Filter>5. ImGui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>0. Engine</Filter>
     </ClCompile>
     <ClCompile Include="Core\Engine.cpp">
+      <Filter>0. Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\EditorPanel.cpp">
       <Filter>0. Engine</Filter>
     </ClCompile>
     <ClCompile Include="Core\GameFramework.cpp">
@@ -96,6 +135,24 @@
       <Filter>3. Entity</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\ThirdParty\imgui\imgui.cpp">
+      <Filter>5. ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imgui\imgui_draw.cpp">
+      <Filter>5. ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imgui\imgui_tables.cpp">
+      <Filter>5. ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imgui\imgui_widgets.cpp">
+      <Filter>5. ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imgui\backends\imgui_impl_glfw.cpp">
+      <Filter>5. ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imgui\backends\imgui_impl_opengl3.cpp">
+      <Filter>5. ImGui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\cube.fs">

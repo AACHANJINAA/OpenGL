@@ -1,14 +1,16 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <string>
 #include "../Components/Component.h"
 
 class GAMEOBJECT {
 private:
     std::vector<std::unique_ptr<COMPONENT>> _components;
+    std::string _name;
 
 public:
-    GAMEOBJECT() = default;
+    GAMEOBJECT(const std::string& name = "GameObject") : _name(name) {}
     ~GAMEOBJECT() = default;
 
     void start();
@@ -16,6 +18,9 @@ public:
     void late_update(float delta_time);
     void render();
     void end();
+
+    void set_name(const std::string& name) { _name = name; }
+    std::string get_name() const { return _name; }
 
     template<typename T, typename... Args>
     T* add_component(Args&&... args) {

@@ -1,13 +1,17 @@
 #include "stdafx.h"
 #include "MeshComponent.h"
 #include "TransformComponent.h"
+#include "GeometryGenerator.h"
 #include "../Entities/GameObject.h"
 #include "../Managers/ResourceManager.h"
 #include "../Managers/CameraManager.h"
 #include "../Core/Shader.h"
 
 MESHCOMPONENT::MESHCOMPONENT(const std::string& shader_name)
-    : _shader_name(shader_name), _vao(0), _vbo(0), _ebo(0) {}
+    : _shader_name(shader_name), _shape_type(SHAPETYPE::CUBE), _vao(0), _vbo(0), _ebo(0) {}
+
+MESHCOMPONENT::MESHCOMPONENT(SHAPETYPE shape_type, const std::string& shader_name)
+    : _shader_name(shader_name), _shape_type(shape_type), _vao(0), _vbo(0), _ebo(0) {}
 
 MESHCOMPONENT::~MESHCOMPONENT() {
     if (_vao != 0) glDeleteVertexArrays(1, &_vao);
@@ -16,31 +20,42 @@ MESHCOMPONENT::~MESHCOMPONENT() {
 }
 
 void MESHCOMPONENT::start() {
-    // 3D Rainbow Cube vertices (position, color)
-    _vertices = {
-        // Front
-        { glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(1.0f, 0.0f, 0.0f) }, // Red
-        { glm::vec3( 0.5f, -0.5f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f) }, // Green
-        { glm::vec3( 0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f) }, // Blue
-        { glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(1.0f, 1.0f, 0.0f) }, // Yellow
+    // Generate shape vertices and indices based on SHAPETYPE
+    switch (_shape_type) {
+        case SHAPETYPE::CUBE:
+            GEOMETRYGENERATOR::generate_cube(_vertices, _indices);
+            break;
+        case SHAPETYPE::SPHERE:
+            GEOMETRYGENERATOR::generate_sphere(_vertices, _indices, 0.5f, 20, 20);
+            break;
+        case SHAPETYPE::PYRAMID:
+            GEOMETRYGENERATOR::generate_pyramid(_vertices, _indices);
+            break;
+    }
 
-        // Back
-        { glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(1.0f, 0.0f, 1.0f) }, // Magenta
-        { glm::vec3( 0.5f, -0.5f, -0.5f), glm::vec3(0.0f, 1.0f, 1.0f) }, // Cyan
-        { glm::vec3( 0.5f,  0.5f, -0.5f), glm::vec3(1.0f, 1.0f, 1.0f) }, // White
-        { glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.1f, 0.1f, 0.1f) }  // Dark Gray
-    };
-
-    _indices = {
-        0, 1, 2, 2, 3, 0, // Front
-        1, 5, 6, 6, 2, 1, // Right
-        5, 4, 7, 7, 6, 5, // Back
-        4, 0, 3, 3, 7, 4, // Left
-        3, 2, 6, 6, 7, 3, // Top
-        4, 5, 1, 1, 0, 4  // Bottom
-    };
-
+    calculate_local_aabb();
     set_mesh();
+}
+
+void MESHCOMPONENT::calculate_local_aabb() {
+    if (_vertices.empty()) {
+        _aabb_min = glm::vec3(-0.5f);
+        _aabb_max = glm::vec3(0.5f);
+        return;
+    }
+
+    _aabb_min = _vertices[0]._position;
+    _aabb_max = _vertices[0]._position;
+
+    for (const auto& vertex : _vertices) {
+        _aabb_min.x = std::min(_aabb_min.x, vertex._position.x);
+        _aabb_min.y = std::min(_aabb_min.y, vertex._position.y);
+        _aabb_min.z = std::min(_aabb_min.z, vertex._position.z);
+
+        _aabb_max.x = std::max(_aabb_max.x, vertex._position.x);
+        _aabb_max.y = std::max(_aabb_max.y, vertex._position.y);
+        _aabb_max.z = std::max(_aabb_max.z, vertex._position.z);
+    }
 }
 
 void MESHCOMPONENT::set_mesh() {

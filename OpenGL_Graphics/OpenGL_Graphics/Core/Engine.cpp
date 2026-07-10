@@ -5,6 +5,10 @@
 #include "../Managers/InputManager.h"
 #include "../Managers/CameraManager.h"
 #include "Shader.h"
+#include "EditorPanel.h"
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
 
 // GLFW window size callback
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height) {
@@ -15,6 +19,11 @@ ENGINE::ENGINE(int width, int height, const std::string& title)
     : _width(width), _height(height), _title(title) {}
 
 ENGINE::~ENGINE() {
+    // Shutdown Dear ImGui
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
     RESOURCEMANAGER::get_instance().clear();
     SCENEMANAGER::get_instance().clear();
     if (_window) {
@@ -63,6 +72,19 @@ bool ENGINE::initialize_opengl() {
 
     // Configure global OpenGL state
     glEnable(GL_DEPTH_TEST);
+
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+
+    // Setup Dear ImGui style
+    ImGui::StyleColorsDark();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(_window, true);
+    ImGui_ImplOpenGL3_Init("#version 330");
 
     return true;
 }
@@ -117,6 +139,14 @@ void ENGINE::run() {
         // Process input
         process_input();
 
+        // Start Dear ImGui Frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        // Update Editor Panels
+        EDITORPANEL::get_instance().update_and_render();
+
         // Clear color and depth buffers
         glClearColor(0.15f, 0.15f, 0.15f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -125,6 +155,10 @@ void ENGINE::run() {
         SCENEMANAGER::get_instance().update(_delta_time);
         SCENEMANAGER::get_instance().late_update(_delta_time);
         SCENEMANAGER::get_instance().render();
+
+        // Render ImGui
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
         // Swap buffers and poll events
         glfwSwapBuffers(_window);

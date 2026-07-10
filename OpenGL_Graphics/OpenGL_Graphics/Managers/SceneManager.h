@@ -1,12 +1,14 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <glm/glm.hpp>
 
 class GAMEOBJECT;
 
 class SCENEMANAGER {
 private:
     std::vector<std::shared_ptr<GAMEOBJECT>> _gameobjects;
+    std::shared_ptr<GAMEOBJECT> _selected_gameobject = nullptr;
 
     SCENEMANAGER() = default;
     ~SCENEMANAGER() = default;
@@ -25,4 +27,11 @@ public:
     void render();
     void end();
     void clear();
+
+    const std::vector<std::shared_ptr<GAMEOBJECT>>& get_gameobjects() const { return _gameobjects; }
+
+    void set_selected_gameobject(const std::shared_ptr<GAMEOBJECT>& go);
+    std::shared_ptr<GAMEOBJECT> get_selected_gameobject() const;
+
+    std::shared_ptr<GAMEOBJECT> raycast_closest(const glm::vec3& ray_origin, const glm::vec3& ray_dir);
 };

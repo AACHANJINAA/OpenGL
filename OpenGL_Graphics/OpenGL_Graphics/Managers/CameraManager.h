@@ -30,4 +30,6 @@ public:
 
     void set_fov(float fov);
     float get_fov() const;
+
+    void screen_point_to_ray(float x, float y, float width, float height, glm::vec3& ray_origin, glm::vec3& ray_dir) const;
 };

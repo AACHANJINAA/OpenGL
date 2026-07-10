@@ -45,3 +45,28 @@ void CAMERAMANAGER::set_fov(float fov) {
 float CAMERAMANAGER::get_fov() const {
     return _fov;
 }
+
+void CAMERAMANAGER::screen_point_to_ray(float x, float y, float width, float height, glm::vec3& ray_origin, glm::vec3& ray_dir) const {
+    // 1. Convert screen coordinates to NDC (Normalized Device Coordinates)
+    float x_ndc = (2.0f * x) / width - 1.0f;
+    float y_ndc = 1.0f - (2.0f * y) / height;
+
+    // 2. Homogeneous Clip Coordinates (Point on the near plane)
+    glm::vec4 ray_clip = glm::vec4(x_ndc, y_ndc, -1.0f, 1.0f);
+
+    // 3. Convert to World space using the inverse of Projection * View matrix
+    glm::mat4 projection = get_projection_matrix(width / height);
+    glm::mat4 view = get_view_matrix();
+    glm::mat4 inv_proj_view = glm::inverse(projection * view);
+
+    glm::vec4 world_pos = inv_proj_view * ray_clip;
+    
+    // 4. Perform perspective divide to get coordinates in 3D world space
+    if (std::abs(world_pos.w) > 0.0001f) {
+        world_pos /= world_pos.w;
+    }
+
+    // 5. Establish ray origin and normalized direction
+    ray_origin = _position;
+    ray_dir = glm::normalize(glm::vec3(world_pos) - ray_origin);
+}
