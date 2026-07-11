@@ -113,7 +113,7 @@ std::shared_ptr<GAMEOBJECT> SCENEMANAGER::raycast_closest(const glm::vec3& ray_o
         glm::mat4 inv_model = glm::inverse(model);
 
         glm::vec3 local_ro = glm::vec3(inv_model * glm::vec4(ray_origin, 1.0f));
-        glm::vec3 local_rd = glm::normalize(glm::vec3(inv_model * glm::vec4(ray_dir, 0.0f)));
+        glm::vec3 local_rd = glm::vec3(inv_model * glm::vec4(ray_dir, 0.0f));
 
         float t = 0.0f;
         if (ray_aabb_intersect(local_ro, local_rd, mesh->get_aabb_min(), mesh->get_aabb_max(), t)) {

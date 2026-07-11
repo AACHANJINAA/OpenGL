@@ -9,6 +9,7 @@
 #include "../Entities/GameObject.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/MeshComponent.h"
+#include "../Components/KeyboardController.h"
 #include <string>
 
 EDITORPANEL& EDITORPANEL::get_instance() {
@@ -50,6 +51,7 @@ void EDITORPANEL::update_and_render() {
         go->set_name("Cube " + std::to_string(SCENEMANAGER::get_instance().get_gameobjects().size()));
         go->add_component<TRANSFORMCOMPONENT>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
         go->add_component<MESHCOMPONENT>(MESHCOMPONENT::SHAPETYPE::CUBE, "cubeShader");
+        go->add_component<KEYBOARDCONTROLLER>(2.0f, 90.0f);
         go->start();
     }
     ImGui::SameLine();
@@ -58,6 +60,7 @@ void EDITORPANEL::update_and_render() {
         go->set_name("Sphere " + std::to_string(SCENEMANAGER::get_instance().get_gameobjects().size()));
         go->add_component<TRANSFORMCOMPONENT>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
         go->add_component<MESHCOMPONENT>(MESHCOMPONENT::SHAPETYPE::SPHERE, "cubeShader");
+        go->add_component<KEYBOARDCONTROLLER>(2.0f, 90.0f);
         go->start();
     }
     ImGui::SameLine();
@@ -66,6 +69,7 @@ void EDITORPANEL::update_and_render() {
         go->set_name("Pyramid " + std::to_string(SCENEMANAGER::get_instance().get_gameobjects().size()));
         go->add_component<TRANSFORMCOMPONENT>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
         go->add_component<MESHCOMPONENT>(MESHCOMPONENT::SHAPETYPE::PYRAMID, "cubeShader");
+        go->add_component<KEYBOARDCONTROLLER>(2.0f, 90.0f);
         go->start();
     }
     

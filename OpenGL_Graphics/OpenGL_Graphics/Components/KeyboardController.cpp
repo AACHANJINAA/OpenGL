@@ -1,12 +1,16 @@
 #include "stdafx.h"
 #include "KeyboardController.h"
 #include "../Managers/InputManager.h"
+#include "../Managers/SceneManager.h"
 #include "../Entities/GameObject.h"
 #include "TransformComponent.h"
 KEYBOARDCONTROLLER::KEYBOARDCONTROLLER(float move_speed, float rotate_speed)
     : _move_speed(move_speed), _rotate_speed(rotate_speed) {}
 
 void KEYBOARDCONTROLLER::update(float delta_time) {
+    // Only update if this GameObject is currently selected in SCENEMANAGER
+    if (SCENEMANAGER::get_instance().get_selected_gameobject().get() != _owner) return;
+
     auto transform = _owner->get_component<TRANSFORMCOMPONENT>();
     if (!transform) return;
 
