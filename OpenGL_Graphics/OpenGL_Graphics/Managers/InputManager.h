@@ -14,6 +14,7 @@ public:
     static INPUTMANAGER& get_instance();
 
     void initialize(GLFWwindow* window);
+    GLFWwindow* get_window() const { return _window; }
     bool is_key_pressed(int key_code) const;
     bool is_mouse_button_pressed(int button_code) const;
     void get_mouse_position(double& x, double& y) const;

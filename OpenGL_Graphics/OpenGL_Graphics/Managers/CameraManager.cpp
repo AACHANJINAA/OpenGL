@@ -88,8 +88,21 @@ void CAMERAMANAGER::screen_point_to_ray(float x, float y, float width, float hei
 void CAMERAMANAGER::update(float delta_time) {
     auto& input = INPUTMANAGER::get_instance();
 
-    // 1. Unreal-style Mouse Look (RMB Held)
+    // 1. Unreal-style Mouse Look (RMB Held) - Lock & hide cursor, restore on release
+    static bool last_rmb_pressed = false;
     bool rmb_pressed = input.is_mouse_button_pressed(GLFW_MOUSE_BUTTON_RIGHT);
+    
+    GLFWwindow* window = input.get_window();
+    if (window) {
+        if (rmb_pressed && !last_rmb_pressed) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            _first_mouse = true;
+        }
+        else if (!rmb_pressed && last_rmb_pressed) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
+    }
+    last_rmb_pressed = rmb_pressed;
     
     if (rmb_pressed) {
         double current_x, current_y;
