@@ -139,6 +139,9 @@ void ENGINE::run() {
         // Process input
         process_input();
 
+        // Update CameraManager (WASD/EQ flying & Selection Focus)
+        CAMERAMANAGER::get_instance().update(_delta_time);
+
         // Start Dear ImGui Frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();

@@ -6,9 +6,18 @@
 class GAMEOBJECT;
 
 class SCENEMANAGER {
+public:
+    enum class TOOLMODE {
+        SELECT,
+        TRANSLATE,
+        ROTATE,
+        SCALE
+    };
+
 private:
     std::vector<std::shared_ptr<GAMEOBJECT>> _gameobjects;
     std::shared_ptr<GAMEOBJECT> _selected_gameobject = nullptr;
+    TOOLMODE _tool_mode = TOOLMODE::SELECT;
 
     SCENEMANAGER() = default;
     ~SCENEMANAGER() = default;
@@ -34,4 +43,7 @@ public:
     std::shared_ptr<GAMEOBJECT> get_selected_gameobject() const;
 
     std::shared_ptr<GAMEOBJECT> raycast_closest(const glm::vec3& ray_origin, const glm::vec3& ray_dir);
+
+    void set_tool_mode(TOOLMODE mode) { _tool_mode = mode; }
+    TOOLMODE get_tool_mode() const { return _tool_mode; }
 };

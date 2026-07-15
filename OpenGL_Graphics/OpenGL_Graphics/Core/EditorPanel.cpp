@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "EditorPanel.h"
 #include "imgui.h"
+#include "ImGuizmo.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 #include "../Managers/SceneManager.h"
@@ -9,8 +10,9 @@
 #include "../Entities/GameObject.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/MeshComponent.h"
-#include "../Components/KeyboardController.h"
+#include <glm/gtc/type_ptr.hpp>
 #include <string>
+#include <algorithm>
 
 EDITORPANEL& EDITORPANEL::get_instance() {
     static EDITORPANEL instance;
@@ -18,12 +20,16 @@ EDITORPANEL& EDITORPANEL::get_instance() {
 }
 
 void EDITORPANEL::update_and_render() {
+    // Initialize ImGuizmo for this frame
+    ImGuizmo::BeginFrame();
+
     // 1. Handle Mouse Clicking Raycast Selection (Picking)
     static bool last_mouse_state = false;
     bool current_mouse_state = INPUTMANAGER::get_instance().is_mouse_button_pressed(GLFW_MOUSE_BUTTON_LEFT);
     
-    // Only raycast if left mouse button was clicked, was not pressed in the previous frame, and ImGui doesn't want the mouse.
-    if (current_mouse_state && !last_mouse_state && !ImGui::GetIO().WantCaptureMouse) {
+    // Only raycast if left mouse button was clicked, was not pressed in the previous frame, and ImGui/ImGuizmo doesn't want the mouse.
+    // ImGuizmo::IsOver() checks if the mouse is hovering over the 3D translation/rotation/scale handles.
+    if (current_mouse_state && !last_mouse_state && !ImGui::GetIO().WantCaptureMouse && !ImGuizmo::IsOver()) {
         double x, y;
         INPUTMANAGER::get_instance().get_mouse_position(x, y);
 
@@ -43,15 +49,26 @@ void EDITORPANEL::update_and_render() {
     }
     last_mouse_state = current_mouse_state;
 
-    // 2. Render Toolbox Panel (Spawner)
+    // 2. Render Toolbox Panel (Spawner & Tool Mode)
     ImGui::Begin("Toolbox (Object Spawner)");
+    
+    // Display active gizmo/tool mode
+    ImGui::Text("Gizmo / Tool Mode:");
+    auto current_mode = SCENEMANAGER::get_instance().get_tool_mode();
+    std::string mode_str = "SELECT (Q)";
+    if (current_mode == SCENEMANAGER::TOOLMODE::TRANSLATE) mode_str = "TRANSLATE (W)";
+    else if (current_mode == SCENEMANAGER::TOOLMODE::ROTATE) mode_str = "ROTATE (E)";
+    else if (current_mode == SCENEMANAGER::TOOLMODE::SCALE) mode_str = "SCALE (R)";
+    ImGui::TextColored(ImVec4(1.0f, 0.9f, 0.0f, 1.0f), "Active: %s", mode_str.c_str());
+    
+    ImGui::Separator();
+
     ImGui::Text("Primitive Spawning:");
     if (ImGui::Button("Spawn Cube")) {
         auto go = SCENEMANAGER::get_instance().create_gameobject();
         go->set_name("Cube " + std::to_string(SCENEMANAGER::get_instance().get_gameobjects().size()));
         go->add_component<TRANSFORMCOMPONENT>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
         go->add_component<MESHCOMPONENT>(MESHCOMPONENT::SHAPETYPE::CUBE, "cubeShader");
-        go->add_component<KEYBOARDCONTROLLER>(2.0f, 90.0f);
         go->start();
     }
     ImGui::SameLine();
@@ -60,7 +77,6 @@ void EDITORPANEL::update_and_render() {
         go->set_name("Sphere " + std::to_string(SCENEMANAGER::get_instance().get_gameobjects().size()));
         go->add_component<TRANSFORMCOMPONENT>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
         go->add_component<MESHCOMPONENT>(MESHCOMPONENT::SHAPETYPE::SPHERE, "cubeShader");
-        go->add_component<KEYBOARDCONTROLLER>(2.0f, 90.0f);
         go->start();
     }
     ImGui::SameLine();
@@ -69,7 +85,6 @@ void EDITORPANEL::update_and_render() {
         go->set_name("Pyramid " + std::to_string(SCENEMANAGER::get_instance().get_gameobjects().size()));
         go->add_component<TRANSFORMCOMPONENT>(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
         go->add_component<MESHCOMPONENT>(MESHCOMPONENT::SHAPETYPE::PYRAMID, "cubeShader");
-        go->add_component<KEYBOARDCONTROLLER>(2.0f, 90.0f);
         go->start();
     }
     
@@ -134,4 +149,84 @@ void EDITORPANEL::update_and_render() {
         ImGui::Text("Select an object to inspect properties.");
     }
     ImGui::End();
+
+    // 5. Render ImGuizmo 3D Manipulation Gizmos (Translation, Rotation, Scale)
+    if (selected) {
+        auto transform = selected->get_component<TRANSFORMCOMPONENT>();
+        if (transform) {
+            int win_w, win_h;
+            INPUTMANAGER::get_instance().get_window_size(win_w, win_h);
+            float width = static_cast<float>(win_w);
+            float height = static_cast<float>(win_h);
+
+            if (width > 0 && height > 0) {
+                // Set up fullscreen transparent window for ImGuizmo
+                ImGui::SetNextWindowPos(ImVec2(0, 0));
+                ImGui::SetNextWindowSize(ImVec2(width, height));
+                ImGui::Begin("##GizmoWindow", nullptr, 
+                    ImGuiWindowFlags_NoTitleBar | 
+                    ImGuiWindowFlags_NoResize | 
+                    ImGuiWindowFlags_NoScrollbar | 
+                    ImGuiWindowFlags_NoSavedSettings | 
+                    ImGuiWindowFlags_NoBackground | 
+                    ImGuiWindowFlags_NoMove);
+
+                ImGuizmo::SetOrthographic(false);
+                ImGuizmo::SetDrawlist();
+                ImGuizmo::SetRect(0.0f, 0.0f, width, height);
+
+                float aspect = width / height;
+                glm::mat4 view = CAMERAMANAGER::get_instance().get_view_matrix();
+                glm::mat4 projection = CAMERAMANAGER::get_instance().get_projection_matrix(aspect);
+                glm::mat4 model = transform->get_model_matrix();
+
+                // Convert tool mode to ImGuizmo operations
+                ImGuizmo::OPERATION operation = ImGuizmo::TRANSLATE;
+                bool draw_gizmo = true;
+
+                switch (SCENEMANAGER::get_instance().get_tool_mode()) {
+                    case SCENEMANAGER::TOOLMODE::SELECT:
+                        draw_gizmo = false;
+                        break;
+                    case SCENEMANAGER::TOOLMODE::TRANSLATE:
+                        operation = ImGuizmo::TRANSLATE;
+                        break;
+                    case SCENEMANAGER::TOOLMODE::ROTATE:
+                        operation = ImGuizmo::ROTATE;
+                        break;
+                    case SCENEMANAGER::TOOLMODE::SCALE:
+                        operation = ImGuizmo::SCALE;
+                        break;
+                }
+
+                if (draw_gizmo) {
+                    // Manipulate the transform matrix in Local Space
+                    ImGuizmo::Manipulate(
+                        glm::value_ptr(view),
+                        glm::value_ptr(projection),
+                        operation,
+                        ImGuizmo::LOCAL,
+                        glm::value_ptr(model)
+                    );
+
+                    // Decompose new transform matrix if the user is dragging the gizmo handles
+                    if (ImGuizmo::IsUsing()) {
+                        float matrixTranslation[3], matrixRotation[3], matrixScale[3];
+                        ImGuizmo::DecomposeMatrixToComponents(
+                            glm::value_ptr(model),
+                            matrixTranslation,
+                            matrixRotation,
+                            matrixScale
+                        );
+
+                        transform->_position = glm::vec3(matrixTranslation[0], matrixTranslation[1], matrixTranslation[2]);
+                        transform->_rotation = glm::vec3(matrixRotation[0], matrixRotation[1], matrixRotation[2]);
+                        transform->_scale = glm::vec3(matrixScale[0], matrixScale[1], matrixScale[2]);
+                    }
+                }
+
+                ImGui::End(); // End of ##GizmoWindow
+            }
+        }
+    }
 }

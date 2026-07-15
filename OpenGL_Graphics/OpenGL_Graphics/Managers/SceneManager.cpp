@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "SceneManager.h"
+#include "InputManager.h"
 #include "../Entities/GameObject.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/MeshComponent.h"
+#include "imgui.h"
 #include <algorithm>
 #include <cmath>
 
@@ -63,6 +65,31 @@ void SCENEMANAGER::start() {
 }
 
 void SCENEMANAGER::update(float delta_time) {
+    auto& input = INPUTMANAGER::get_instance();
+
+    // 1. Check for Q, W, E, R key presses to change tool mode (if not typing in ImGui)
+    if (!ImGui::GetIO().WantTextInput) {
+        static bool last_q = false, last_w = false, last_e = false, last_r = false;
+        bool curr_q = input.is_key_pressed(GLFW_KEY_Q);
+        bool curr_w = input.is_key_pressed(GLFW_KEY_W);
+        bool curr_e = input.is_key_pressed(GLFW_KEY_E);
+        bool curr_r = input.is_key_pressed(GLFW_KEY_R);
+
+        // QWER tool switching (Only when camera flight - RMB - is not active)
+        if (!input.is_mouse_button_pressed(GLFW_MOUSE_BUTTON_RIGHT)) {
+            if (curr_q && !last_q) _tool_mode = TOOLMODE::SELECT;
+            else if (curr_w && !last_w) _tool_mode = TOOLMODE::TRANSLATE;
+            else if (curr_e && !last_e) _tool_mode = TOOLMODE::ROTATE;
+            else if (curr_r && !last_r) _tool_mode = TOOLMODE::SCALE;
+        }
+
+        last_q = curr_q;
+        last_w = curr_w;
+        last_e = curr_e;
+        last_r = curr_r;
+    }
+
+    // 2. Propagate updates to gameobjects
     for (size_t i = 0; i < _gameobjects.size(); ++i) {
         _gameobjects[i]->update(delta_time);
     }
@@ -89,6 +116,7 @@ void SCENEMANAGER::end() {
 void SCENEMANAGER::clear() {
     _gameobjects.clear();
     _selected_gameobject = nullptr;
+    _tool_mode = TOOLMODE::SELECT;
 }
 
 void SCENEMANAGER::set_selected_gameobject(const std::shared_ptr<GAMEOBJECT>& go) {
@@ -113,7 +141,7 @@ std::shared_ptr<GAMEOBJECT> SCENEMANAGER::raycast_closest(const glm::vec3& ray_o
         glm::mat4 inv_model = glm::inverse(model);
 
         glm::vec3 local_ro = glm::vec3(inv_model * glm::vec4(ray_origin, 1.0f));
-        glm::vec3 local_rd = glm::vec3(inv_model * glm::vec4(ray_dir, 0.0f));
+        glm::vec3 local_rd = glm::normalize(glm::vec3(inv_model * glm::vec4(ray_dir, 0.0f)));
 
         float t = 0.0f;
         if (ray_aabb_intersect(local_ro, local_rd, mesh->get_aabb_min(), mesh->get_aabb_max(), t)) {

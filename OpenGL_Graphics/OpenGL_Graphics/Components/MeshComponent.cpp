@@ -5,6 +5,7 @@
 #include "../Entities/GameObject.h"
 #include "../Managers/ResourceManager.h"
 #include "../Managers/CameraManager.h"
+#include "../Managers/SceneManager.h"
 #include "../Core/Shader.h"
 
 MESHCOMPONENT::MESHCOMPONENT(const std::string& shader_name)
@@ -105,6 +106,11 @@ void MESHCOMPONENT::render() {
     shader->set_mat4("projection", projection);
     shader->set_mat4("view", view);
     shader->set_mat4("model", model);
+
+    // Set selection highlight uniform
+    auto selected = SCENEMANAGER::get_instance().get_selected_gameobject();
+    bool is_selected = (selected.get() == _owner);
+    shader->set_float("u_selected", is_selected ? 1.0f : 0.0f);
 
     glBindVertexArray(_vao);
     glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(_indices.size()), GL_UNSIGNED_INT, 0);

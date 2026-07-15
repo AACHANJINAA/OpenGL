@@ -184,6 +184,7 @@
     <ClInclude Include="..\ThirdParty\imgui\backends\imgui_impl_glfw.h" />
     <ClInclude Include="..\ThirdParty\imgui\backends\imgui_impl_opengl3.h" />
     <ClInclude Include="..\ThirdParty\imgui\backends\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="..\ThirdParty\imgui\ImGuizmo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Components\KeyboardController.cpp" />
@@ -215,6 +216,9 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\imgui\backends\imgui_impl_opengl3.cpp">
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imgui\ImGuizmo.cpp">
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">

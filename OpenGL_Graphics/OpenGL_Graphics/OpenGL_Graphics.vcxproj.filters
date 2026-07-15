@@ -93,6 +93,9 @@
     <ClInclude Include="..\ThirdParty\imgui\backends\imgui_impl_opengl3_loader.h">
       <Filter>5. ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="..\ThirdParty\imgui\ImGuizmo.h">
+      <Filter>5. ImGui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -151,6 +154,9 @@
       <Filter>5. ImGui</Filter>
     </ClCompile>
     <ClCompile Include="..\ThirdParty\imgui\backends\imgui_impl_opengl3.cpp">
+      <Filter>5. ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ThirdParty\imgui\ImGuizmo.cpp">
       <Filter>5. ImGui</Filter>
     </ClCompile>
   </ItemGroup>
