@@ -78,6 +78,7 @@ bool ENGINE::initialize_opengl() {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    io.FontGlobalScale = 1.25f; // Scale up font size for better readability
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
