@@ -45,7 +45,21 @@ bool ENGINE::initialize_glfw() {
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    _window = glfwCreateWindow(_width, _height, _title.c_str(), nullptr, nullptr);
+    // Query primary monitor video mode to set full screen window settings
+    GLFWmonitor* primary_monitor = glfwGetPrimaryMonitor();
+    if (primary_monitor) {
+        const GLFWvidmode* mode = glfwGetVideoMode(primary_monitor);
+        if (mode) {
+            glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+            glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+            glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+            glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+            _width = mode->width;
+            _height = mode->height;
+        }
+    }
+
+    _window = glfwCreateWindow(_width, _height, _title.c_str(), primary_monitor, nullptr);
     if (!_window) {
         std::cerr << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
