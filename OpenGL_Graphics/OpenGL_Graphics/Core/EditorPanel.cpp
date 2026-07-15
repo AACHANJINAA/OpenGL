@@ -477,9 +477,10 @@ void EDITORPANEL::update_and_render() {
                     // Scale factor relative to identity (1,1,1)
                     glm::vec3 delta_scale = glm::vec3(matrixScale[0], matrixScale[1], matrixScale[2]) / glm::vec3(1.0f);
 
-                    for (auto& go : selected_list) {
+                    for (size_t i = 0; i < selected_list.size(); ++i) {
+                        auto& go = selected_list[i];
                         auto t = go->get_component<TRANSFORMCOMPONENT>();
-                        if (t) {
+                        if (t && i < drag_snapshots.size()) {
                             // A. Translate object
                             t->_position += delta_pos;
 
@@ -496,8 +497,9 @@ void EDITORPANEL::update_and_render() {
                                 t->_position = pivot + glm::vec3(rot_matrix * glm::vec4(offset, 1.0f));
                             }
 
-                            // C. Scale object
-                            t->_scale *= delta_scale;
+                            // C. Stably scale object relative to starting snapshot scale
+                            glm::vec3 current_gizmo_scale = glm::vec3(matrixScale[0], matrixScale[1], matrixScale[2]);
+                            t->_scale = drag_snapshots[i].scale * current_gizmo_scale;
                         }
                     }
                 }
