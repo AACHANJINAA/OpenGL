@@ -7,15 +7,15 @@
 #include "imgui.h"
 
 CAMERAMANAGER::CAMERAMANAGER()
-    : _position(0.0f, 0.0f, 3.0f) // Camera is at (0, 0, 3)
-    , _target(0.0f, 0.0f, 0.0f)   // Looking at (0, 0, 0)
+    : _position(3.0f, 4.2426f, 3.0f) // Initial position placed to look down at origin at exactly 45 degrees
+    , _target(0.0f, 0.0f, 0.0f)      // Looking at the origin (0, 0, 0)
     , _up(0.0f, 1.0f, 0.0f)
     , _fov(45.0f)
     , _near_plane(0.1f)
     , _far_plane(100.0f)
-    , _front(0.0f, 0.0f, -1.0f)   // Looking towards -Z
-    , _yaw(-90.0f)
-    , _pitch(0.0f)
+    , _front(-0.5f, -0.7071f, -0.5f) // Normalized vector pointing from (3, 4.24, 3) to (0, 0, 0)
+    , _yaw(-135.0f)                  // Yaw angle for (-0.5, 0, -0.5) horizontal direction
+    , _pitch(-45.0f)                 // Pitch angle looking down at exactly 45 degrees
     , _move_speed(3.0f)
     , _mouse_sensitivity(0.1f)
     , _last_mouse_x(400.0f)

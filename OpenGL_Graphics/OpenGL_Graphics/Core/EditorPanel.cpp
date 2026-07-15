@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 #include "EditorPanel.h"
 #include "imgui.h"
 #include "ImGuizmo.h"
@@ -23,13 +23,21 @@ void EDITORPANEL::update_and_render() {
     // Initialize ImGuizmo for this frame
     ImGuizmo::BeginFrame();
 
+    auto selected = SCENEMANAGER::get_instance().get_selected_gameobject();
+
+    // Track mouse hover state over editor UI panels to prevent picking clicks from being absorbed
+    static bool is_toolbox_hovered = false;
+    static bool is_hierarchy_hovered = false;
+    static bool is_inspector_hovered = false;
+    bool mouse_over_editor_ui = is_toolbox_hovered || is_hierarchy_hovered || is_inspector_hovered;
+
     // 1. Handle Mouse Clicking Raycast Selection (Picking)
     static bool last_mouse_state = false;
     bool current_mouse_state = INPUTMANAGER::get_instance().is_mouse_button_pressed(GLFW_MOUSE_BUTTON_LEFT);
     
-    // Only raycast if left mouse button was clicked, was not pressed in the previous frame, and ImGui/ImGuizmo doesn't want the mouse.
-    // ImGuizmo::IsOver() checks if the mouse is hovering over the 3D translation/rotation/scale handles.
-    if (current_mouse_state && !last_mouse_state && !ImGui::GetIO().WantCaptureMouse && !ImGuizmo::IsOver()) {
+    // Perform selection raycast only when Left Mouse Button is clicked (press edge), 
+    // the cursor is not over the editor panels, and the cursor is not over the 3D Gizmo handles.
+    if (current_mouse_state && !last_mouse_state && !mouse_over_editor_ui && !ImGuizmo::IsOver()) {
         double x, y;
         INPUTMANAGER::get_instance().get_mouse_position(x, y);
 
@@ -45,12 +53,16 @@ void EDITORPANEL::update_and_render() {
 
             auto closest = SCENEMANAGER::get_instance().raycast_closest(ray_ro, ray_rd);
             SCENEMANAGER::get_instance().set_selected_gameobject(closest);
+            selected = closest; // Update local cache
         }
     }
     last_mouse_state = current_mouse_state;
 
-    // 2. Render Toolbox Panel (Spawner & Tool Mode)
+    // 2. Render Toolbox Panel (Spawner & Tool Mode & Selected Object values)
+    ImGui::SetNextWindowSize(ImVec2(500.0f, 320.0f), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(10.0f, 10.0f), ImGuiCond_FirstUseEver);
     ImGui::Begin("Toolbox (Object Spawner)");
+    is_toolbox_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
     
     // Display active gizmo/tool mode
     ImGui::Text("Gizmo / Tool Mode:");
@@ -91,24 +103,46 @@ void EDITORPANEL::update_and_render() {
     ImGui::Separator();
     if (ImGui::Button("Clear All GameObjects")) {
         SCENEMANAGER::get_instance().clear();
+        selected = nullptr;
+    }
+
+    // Display selected object's numerical values below spawn buttons
+    if (selected) {
+        ImGui::Separator();
+        ImGui::TextColored(ImVec4(1.0f, 0.9f, 0.0f, 1.0f), "Selected Object Transform:");
+        auto transform = selected->get_component<TRANSFORMCOMPONENT>();
+        if (transform) {
+            ImGui::Text("Position: (%.2f, %.2f, %.2f)", transform->_position.x, transform->_position.y, transform->_position.z);
+            ImGui::Text("Rotation: (%.2f, %.2f, %.2f)", transform->_rotation.x, transform->_rotation.y, transform->_rotation.z);
+            ImGui::Text("Scale:    (%.2f, %.2f, %.2f)", transform->_scale.x, transform->_scale.y, transform->_scale.z);
+        }
+    } else {
+        ImGui::Separator();
+        ImGui::Text("No object selected.");
     }
     ImGui::End();
 
     // 3. Render Hierarchy Panel
+    ImGui::SetNextWindowSize(ImVec2(400.0f, 240.0f), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(10.0f, 340.0f), ImGuiCond_FirstUseEver);
     ImGui::Begin("Hierarchy");
+    is_hierarchy_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
     auto& list = SCENEMANAGER::get_instance().get_gameobjects();
-    auto selected = SCENEMANAGER::get_instance().get_selected_gameobject();
     for (size_t i = 0; i < list.size(); ++i) {
         std::string label = list[i]->get_name() + "##" + std::to_string(i);
         bool is_selected = (list[i] == selected);
         if (ImGui::Selectable(label.c_str(), is_selected)) {
             SCENEMANAGER::get_instance().set_selected_gameobject(list[i]);
+            selected = list[i]; // Update local cache
         }
     }
     ImGui::End();
 
     // 4. Render Inspector Panel
+    ImGui::SetNextWindowSize(ImVec2(400.0f, 300.0f), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowPos(ImVec2(10.0f, 590.0f), ImGuiCond_FirstUseEver);
     ImGui::Begin("Inspector");
+    is_inspector_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
     if (selected) {
         // Name Field
         char name_buf[64];
@@ -160,7 +194,7 @@ void EDITORPANEL::update_and_render() {
             float height = static_cast<float>(win_h);
 
             if (width > 0 && height > 0) {
-                // Set up fullscreen transparent window for ImGuizmo
+                // Set up fullscreen transparent window for ImGuizmo (NoInputs is NOT set, so ImGuizmo receives clicks correctly)
                 ImGui::SetNextWindowPos(ImVec2(0, 0));
                 ImGui::SetNextWindowSize(ImVec2(width, height));
                 ImGui::Begin("##GizmoWindow", nullptr, 
