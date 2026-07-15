@@ -45,6 +45,9 @@
     <ClInclude Include="Managers\InputManager.h">
       <Filter>1. Manager</Filter>
     </ClInclude>
+    <ClInclude Include="Managers\LightManager.h">
+      <Filter>1. Manager</Filter>
+    </ClInclude>
     <ClInclude Include="Managers\CameraManager.h">
       <Filter>1. Manager</Filter>
     </ClInclude>
@@ -120,6 +123,9 @@
       <Filter>1. Manager</Filter>
     </ClCompile>
     <ClCompile Include="Managers\InputManager.cpp">
+      <Filter>1. Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Managers\LightManager.cpp">
       <Filter>1. Manager</Filter>
     </ClCompile>
     <ClCompile Include="Managers\CameraManager.cpp">

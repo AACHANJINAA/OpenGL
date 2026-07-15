@@ -1,4 +1,4 @@
-﻿#include "stdafx.h"
+#include "stdafx.h"
 #include "EditorPanel.h"
 #include "imgui.h"
 #include "ImGuizmo.h"
@@ -7,6 +7,7 @@
 #include "../Managers/SceneManager.h"
 #include "../Managers/InputManager.h"
 #include "../Managers/CameraManager.h"
+#include "../Managers/LightManager.h"
 #include "../Entities/GameObject.h"
 #include "../Components/TransformComponent.h"
 #include "../Components/MeshComponent.h"
@@ -25,6 +26,17 @@ void EDITORPANEL::update_and_render() {
 
     auto selected = SCENEMANAGER::get_instance().get_selected_gameobject();
 
+    // Query GLFW window size to compute left 20% panel layouts
+    int win_w, win_h;
+    INPUTMANAGER::get_instance().get_window_size(win_w, win_h);
+    float screen_w = static_cast<float>(win_w);
+    float screen_h = static_cast<float>(win_h);
+
+    float panel_w = screen_w * 0.20f; // Left panel occupies exactly 20% of the screen width
+    float height_toolbox = screen_h * 0.40f;
+    float height_hierarchy = screen_h * 0.25f;
+    float height_inspector = screen_h * 0.35f;
+
     // Track mouse hover state over editor UI panels to prevent picking clicks from being absorbed
     static bool is_toolbox_hovered = false;
     static bool is_hierarchy_hovered = false;
@@ -41,15 +53,10 @@ void EDITORPANEL::update_and_render() {
         double x, y;
         INPUTMANAGER::get_instance().get_mouse_position(x, y);
 
-        int win_w, win_h;
-        INPUTMANAGER::get_instance().get_window_size(win_w, win_h);
-        float width = static_cast<float>(win_w);
-        float height = static_cast<float>(win_h);
-
-        if (width > 0 && height > 0) {
+        if (screen_w > 0 && screen_h > 0) {
             glm::vec3 ray_ro, ray_rd;
             CAMERAMANAGER::get_instance().screen_point_to_ray(
-                static_cast<float>(x), static_cast<float>(y), width, height, ray_ro, ray_rd);
+                static_cast<float>(x), static_cast<float>(y), screen_w, screen_h, ray_ro, ray_rd);
 
             auto closest = SCENEMANAGER::get_instance().raycast_closest(ray_ro, ray_rd);
             SCENEMANAGER::get_instance().set_selected_gameobject(closest);
@@ -59,9 +66,9 @@ void EDITORPANEL::update_and_render() {
     last_mouse_state = current_mouse_state;
 
     // 2. Render Toolbox Panel (Spawner & Tool Mode & Selected Object values)
-    ImGui::SetNextWindowSize(ImVec2(500.0f, 320.0f), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowPos(ImVec2(10.0f, 10.0f), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Toolbox (Object Spawner)");
+    ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(panel_w, height_toolbox), ImGuiCond_Always);
+    ImGui::Begin("Toolbox (Object Spawner)", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
     is_toolbox_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
     
     // Display active gizmo/tool mode
@@ -120,12 +127,43 @@ void EDITORPANEL::update_and_render() {
         ImGui::Separator();
         ImGui::Text("No object selected.");
     }
+
+    // Directional Light Settings
+    ImGui::Separator();
+    if (ImGui::CollapsingHeader("Directional Light Settings")) {
+        auto& light = LIGHTMANAGER::get_instance();
+        
+        // Direction control
+        glm::vec3 dir = light.get_direction();
+        if (ImGui::DragFloat3("Light Direction", &dir.x, 0.01f, -1.0f, 1.0f)) {
+            light.set_direction(dir); // Automatically normalized inside set_direction
+        }
+        
+        // Color control
+        glm::vec3 color = light.get_color();
+        if (ImGui::ColorEdit3("Light Color", &color.x)) {
+            light.set_color(color);
+        }
+        
+        // Intensity control
+        float intensity = light.get_intensity();
+        if (ImGui::DragFloat("Intensity", &intensity, 0.05f, 0.0f, 10.0f)) {
+            light.set_intensity(intensity);
+        }
+        
+        // Ambient control
+        glm::vec3 ambient = light.get_ambient();
+        if (ImGui::ColorEdit3("Ambient Color", &ambient.x)) {
+            light.set_ambient(ambient);
+        }
+    }
+
     ImGui::End();
 
     // 3. Render Hierarchy Panel
-    ImGui::SetNextWindowSize(ImVec2(400.0f, 240.0f), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowPos(ImVec2(10.0f, 340.0f), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Hierarchy");
+    ImGui::SetNextWindowPos(ImVec2(0.0f, height_toolbox), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(panel_w, height_hierarchy), ImGuiCond_Always);
+    ImGui::Begin("Hierarchy", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
     is_hierarchy_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
     auto& list = SCENEMANAGER::get_instance().get_gameobjects();
     for (size_t i = 0; i < list.size(); ++i) {
@@ -139,9 +177,9 @@ void EDITORPANEL::update_and_render() {
     ImGui::End();
 
     // 4. Render Inspector Panel
-    ImGui::SetNextWindowSize(ImVec2(400.0f, 300.0f), ImGuiCond_FirstUseEver);
-    ImGui::SetNextWindowPos(ImVec2(10.0f, 590.0f), ImGuiCond_FirstUseEver);
-    ImGui::Begin("Inspector");
+    ImGui::SetNextWindowPos(ImVec2(0.0f, height_toolbox + height_hierarchy), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(panel_w, height_inspector), ImGuiCond_Always);
+    ImGui::Begin("Inspector", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
     is_inspector_hovered = ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows);
     if (selected) {
         // Name Field
@@ -188,15 +226,10 @@ void EDITORPANEL::update_and_render() {
     if (selected) {
         auto transform = selected->get_component<TRANSFORMCOMPONENT>();
         if (transform) {
-            int win_w, win_h;
-            INPUTMANAGER::get_instance().get_window_size(win_w, win_h);
-            float width = static_cast<float>(win_w);
-            float height = static_cast<float>(win_h);
-
-            if (width > 0 && height > 0) {
+            if (screen_w > 0 && screen_h > 0) {
                 // Set up fullscreen transparent window for ImGuizmo (NoInputs is NOT set, so ImGuizmo receives clicks correctly)
                 ImGui::SetNextWindowPos(ImVec2(0, 0));
-                ImGui::SetNextWindowSize(ImVec2(width, height));
+                ImGui::SetNextWindowSize(ImVec2(screen_w, screen_h));
                 ImGui::Begin("##GizmoWindow", nullptr, 
                     ImGuiWindowFlags_NoTitleBar | 
                     ImGuiWindowFlags_NoResize | 
@@ -207,9 +240,9 @@ void EDITORPANEL::update_and_render() {
 
                 ImGuizmo::SetOrthographic(false);
                 ImGuizmo::SetDrawlist();
-                ImGuizmo::SetRect(0.0f, 0.0f, width, height);
+                ImGuizmo::SetRect(0.0f, 0.0f, screen_w, screen_h);
 
-                float aspect = width / height;
+                float aspect = screen_w / screen_h;
                 glm::mat4 view = CAMERAMANAGER::get_instance().get_view_matrix();
                 glm::mat4 projection = CAMERAMANAGER::get_instance().get_projection_matrix(aspect);
                 glm::mat4 model = transform->get_model_matrix();

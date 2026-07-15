@@ -6,6 +6,7 @@
 #include "../Managers/ResourceManager.h"
 #include "../Managers/CameraManager.h"
 #include "../Managers/SceneManager.h"
+#include "../Managers/LightManager.h"
 #include "../Core/Shader.h"
 
 MESHCOMPONENT::MESHCOMPONENT(const std::string& shader_name)
@@ -80,6 +81,10 @@ void MESHCOMPONENT::set_mesh() {
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VERTEX), (void*)offsetof(VERTEX, _color));
 
+    // Normal attribute
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VERTEX), (void*)offsetof(VERTEX, _normal));
+
     glBindVertexArray(0);
 }
 
@@ -106,6 +111,15 @@ void MESHCOMPONENT::render() {
     shader->set_mat4("projection", projection);
     shader->set_mat4("view", view);
     shader->set_mat4("model", model);
+
+    // Pass Directional Light uniforms from LIGHTMANAGER
+    shader->set_vec3("u_lightDir", LIGHTMANAGER::get_instance().get_direction());
+    shader->set_vec3("u_lightColor", LIGHTMANAGER::get_instance().get_color());
+    shader->set_float("u_lightIntensity", LIGHTMANAGER::get_instance().get_intensity());
+    shader->set_vec3("u_ambientLight", LIGHTMANAGER::get_instance().get_ambient());
+    
+    // Pass Camera Position (view position) for specular calculations
+    shader->set_vec3("u_viewPos", CAMERAMANAGER::get_instance().get_position());
 
     // Set selection highlight uniform
     auto selected = SCENEMANAGER::get_instance().get_selected_gameobject();

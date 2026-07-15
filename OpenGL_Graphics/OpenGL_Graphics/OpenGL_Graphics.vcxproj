@@ -172,6 +172,7 @@
     <ClInclude Include="Entities\GameObject.h" />
     <ClInclude Include="Managers\CameraManager.h" />
     <ClInclude Include="Managers\InputManager.h" />
+    <ClInclude Include="Managers\LightManager.h" />
     <ClInclude Include="Managers\ResourceManager.h" />
     <ClInclude Include="Managers\SceneManager.h" />
     <ClInclude Include="stdafx.h" />
@@ -197,6 +198,7 @@
     <ClCompile Include="Entities\GameObject.cpp" />
     <ClCompile Include="Managers\CameraManager.cpp" />
     <ClCompile Include="Managers\InputManager.cpp" />
+    <ClCompile Include="Managers\LightManager.cpp" />
     <ClCompile Include="Managers\ResourceManager.cpp" />
     <ClCompile Include="Managers\SceneManager.cpp" />
     <ClCompile Include="main.cpp" />

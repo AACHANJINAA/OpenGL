@@ -3,71 +3,104 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
-// We need VERTEX definition. Since stdafx.h is included first, VERTEX might not be available yet in header evaluation unless it's defined.
-// Let's declare VERTEX here if not already defined, or simply define it as a struct.
+// Define VERTEX with position, color, and normal for PBR/lighting.
 #ifndef VERTEX_DEFINED
 #define VERTEX_DEFINED
 struct VERTEX {
     glm::vec3 _position;
     glm::vec3 _color;
+    glm::vec3 _normal;
 };
 #endif
 
 namespace GEOMETRYGENERATOR {
     inline void generate_cube(std::vector<VERTEX>& vertices, std::vector<unsigned int>& indices) {
-        vertices = {
-            // Front face
-            { glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(1.0f, 0.0f, 0.0f) }, // Red
-            { glm::vec3( 0.5f, -0.5f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f) }, // Green
-            { glm::vec3( 0.5f,  0.5f,  0.5f), glm::vec3(0.0f, 0.0f, 1.0f) }, // Blue
-            { glm::vec3(-0.5f,  0.5f,  0.5f), glm::vec3(1.0f, 1.0f, 0.0f) }, // Yellow
+        glm::vec3 default_color(0.8f, 0.8f, 0.8f);
 
-            // Back face
-            { glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(1.0f, 0.0f, 1.0f) }, // Magenta
-            { glm::vec3( 0.5f, -0.5f, -0.5f), glm::vec3(0.0f, 1.0f, 1.0f) }, // Cyan
-            { glm::vec3( 0.5f,  0.5f, -0.5f), glm::vec3(1.0f, 1.0f, 1.0f) }, // White
-            { glm::vec3(-0.5f,  0.5f, -0.5f), glm::vec3(0.1f, 0.1f, 0.1f) }  // Dark Gray
+        // A cube has 24 vertices to allow flat shading with distinct face normals
+        vertices = {
+            // Front face (normal = 0, 0, 1)
+            { glm::vec3(-0.5f, -0.5f,  0.5f), default_color, glm::vec3(0.0f, 0.0f, 1.0f) },
+            { glm::vec3( 0.5f, -0.5f,  0.5f), default_color, glm::vec3(0.0f, 0.0f, 1.0f) },
+            { glm::vec3( 0.5f,  0.5f,  0.5f), default_color, glm::vec3(0.0f, 0.0f, 1.0f) },
+            { glm::vec3(-0.5f,  0.5f,  0.5f), default_color, glm::vec3(0.0f, 0.0f, 1.0f) },
+
+            // Back face (normal = 0, 0, -1)
+            { glm::vec3(-0.5f, -0.5f, -0.5f), default_color, glm::vec3(0.0f, 0.0f, -1.0f) },
+            { glm::vec3(-0.5f,  0.5f, -0.5f), default_color, glm::vec3(0.0f, 0.0f, -1.0f) },
+            { glm::vec3( 0.5f,  0.5f, -0.5f), default_color, glm::vec3(0.0f, 0.0f, -1.0f) },
+            { glm::vec3( 0.5f, -0.5f, -0.5f), default_color, glm::vec3(0.0f, 0.0f, -1.0f) },
+
+            // Top face (normal = 0, 1, 0)
+            { glm::vec3(-0.5f,  0.5f, -0.5f), default_color, glm::vec3(0.0f, 1.0f, 0.0f) },
+            { glm::vec3(-0.5f,  0.5f,  0.5f), default_color, glm::vec3(0.0f, 1.0f, 0.0f) },
+            { glm::vec3( 0.5f,  0.5f,  0.5f), default_color, glm::vec3(0.0f, 1.0f, 0.0f) },
+            { glm::vec3( 0.5f,  0.5f, -0.5f), default_color, glm::vec3(0.0f, 1.0f, 0.0f) },
+
+            // Bottom face (normal = 0, -1, 0)
+            { glm::vec3(-0.5f, -0.5f, -0.5f), default_color, glm::vec3(0.0f, -1.0f, 0.0f) },
+            { glm::vec3( 0.5f, -0.5f, -0.5f), default_color, glm::vec3(0.0f, -1.0f, 0.0f) },
+            { glm::vec3( 0.5f, -0.5f,  0.5f), default_color, glm::vec3(0.0f, -1.0f, 0.0f) },
+            { glm::vec3(-0.5f, -0.5f,  0.5f), default_color, glm::vec3(0.0f, -1.0f, 0.0f) },
+
+            // Left face (normal = -1, 0, 0)
+            { glm::vec3(-0.5f, -0.5f, -0.5f), default_color, glm::vec3(-1.0f, 0.0f, 0.0f) },
+            { glm::vec3(-0.5f, -0.5f,  0.5f), default_color, glm::vec3(-1.0f, 0.0f, 0.0f) },
+            { glm::vec3(-0.5f,  0.5f,  0.5f), default_color, glm::vec3(-1.0f, 0.0f, 0.0f) },
+            { glm::vec3(-0.5f,  0.5f, -0.5f), default_color, glm::vec3(-1.0f, 0.0f, 0.0f) },
+
+            // Right face (normal = 1, 0, 0)
+            { glm::vec3( 0.5f, -0.5f,  0.5f), default_color, glm::vec3(1.0f, 0.0f, 0.0f) },
+            { glm::vec3( 0.5f, -0.5f, -0.5f), default_color, glm::vec3(1.0f, 0.0f, 0.0f) },
+            { glm::vec3( 0.5f,  0.5f, -0.5f), default_color, glm::vec3(1.0f, 0.0f, 0.0f) },
+            { glm::vec3( 0.5f,  0.5f,  0.5f), default_color, glm::vec3(1.0f, 0.0f, 0.0f) }
         };
 
         indices = {
-            0, 1, 2, 2, 3, 0, // Front
-            1, 5, 6, 6, 2, 1, // Right
-            5, 4, 7, 7, 6, 5, // Back
-            4, 0, 3, 3, 7, 4, // Left
-            3, 2, 6, 6, 7, 3, // Top
-            4, 5, 1, 1, 0, 4  // Bottom
+            0, 1, 2, 2, 3, 0,       // Front
+            4, 5, 6, 6, 7, 4,       // Back
+            8, 9, 10, 10, 11, 8,    // Top
+            12, 13, 14, 14, 15, 12, // Bottom
+            16, 17, 18, 18, 19, 16, // Left
+            20, 21, 22, 22, 23, 20  // Right
         };
     }
 
     inline void generate_pyramid(std::vector<VERTEX>& vertices, std::vector<unsigned int>& indices) {
-        // A pyramid has 5 vertices (4 base, 1 apex)
-        // To assign flat colors per face, we duplicate vertices for each face.
+        glm::vec3 default_color(0.8f, 0.8f, 0.8f);
+
+        glm::vec3 n_f = glm::normalize(glm::vec3(0.0f, 0.4472f, 0.8944f));
+        glm::vec3 n_r = glm::normalize(glm::vec3(0.8944f, 0.4472f, 0.0f));
+        glm::vec3 n_b = glm::normalize(glm::vec3(0.0f, 0.4472f, -0.8944f));
+        glm::vec3 n_l = glm::normalize(glm::vec3(-0.8944f, 0.4472f, 0.0f));
+        glm::vec3 n_down = glm::vec3(0.0f, -1.0f, 0.0f);
+
         vertices = {
-            // Front face (Apex + Base front-left + Base front-right)
-            { glm::vec3( 0.0f,  0.5f,  0.0f), glm::vec3(1.0f, 0.0f, 0.0f) }, // Apex - Red
-            { glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(1.0f, 0.0f, 0.0f) },
-            { glm::vec3( 0.5f, -0.5f,  0.5f), glm::vec3(1.0f, 0.0f, 0.0f) },
+            // Front face
+            { glm::vec3( 0.0f,  0.5f,  0.0f), default_color, n_f }, // Apex
+            { glm::vec3(-0.5f, -0.5f,  0.5f), default_color, n_f },
+            { glm::vec3( 0.5f, -0.5f,  0.5f), default_color, n_f },
 
-            // Right face (Apex + Base front-right + Base back-right)
-            { glm::vec3( 0.0f,  0.5f,  0.0f), glm::vec3(0.0f, 1.0f, 0.0f) }, // Apex - Green
-            { glm::vec3( 0.5f, -0.5f,  0.5f), glm::vec3(0.0f, 1.0f, 0.0f) },
-            { glm::vec3( 0.5f, -0.5f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f) },
+            // Right face
+            { glm::vec3( 0.0f,  0.5f,  0.0f), default_color, n_r }, // Apex
+            { glm::vec3( 0.5f, -0.5f,  0.5f), default_color, n_r },
+            { glm::vec3( 0.5f, -0.5f, -0.5f), default_color, n_r },
 
-            // Back face (Apex + Base back-right + Base back-left)
-            { glm::vec3( 0.0f,  0.5f,  0.0f), glm::vec3(0.0f, 0.0f, 1.0f) }, // Apex - Blue
-            { glm::vec3( 0.5f, -0.5f, -0.5f), glm::vec3(0.0f, 0.0f, 1.0f) },
-            { glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.0f, 0.0f, 1.0f) },
+            // Back face
+            { glm::vec3( 0.0f,  0.5f,  0.0f), default_color, n_b }, // Apex
+            { glm::vec3( 0.5f, -0.5f, -0.5f), default_color, n_b },
+            { glm::vec3(-0.5f, -0.5f, -0.5f), default_color, n_b },
 
-            // Left face (Apex + Base back-left + Base front-left)
-            { glm::vec3( 0.0f,  0.5f,  0.0f), glm::vec3(1.0f, 1.0f, 0.0f) }, // Apex - Yellow
-            { glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(1.0f, 1.0f, 0.0f) },
-            { glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(1.0f, 1.0f, 0.0f) },
+            // Left face
+            { glm::vec3( 0.0f,  0.5f,  0.0f), default_color, n_l }, // Apex
+            { glm::vec3(-0.5f, -0.5f, -0.5f), default_color, n_l },
+            { glm::vec3(-0.5f, -0.5f,  0.5f), default_color, n_l },
 
-            // Base face (Square base - we split into 2 triangles)
-            { glm::vec3(-0.5f, -0.5f,  0.5f), glm::vec3(0.5f, 0.5f, 0.5f) }, // Gray base
-            { glm::vec3( 0.5f, -0.5f,  0.5f), glm::vec3(0.5f, 0.5f, 0.5f) },
-            { glm::vec3( 0.5f, -0.5f, -0.5f), glm::vec3(0.5f, 0.5f, 0.5f) },
-            { glm::vec3(-0.5f, -0.5f, -0.5f), glm::vec3(0.5f, 0.5f, 0.5f) }
+            // Base face (flat normals down)
+            { glm::vec3(-0.5f, -0.5f,  0.5f), default_color, n_down },
+            { glm::vec3( 0.5f, -0.5f,  0.5f), default_color, n_down },
+            { glm::vec3( 0.5f, -0.5f, -0.5f), default_color, n_down },
+            { glm::vec3(-0.5f, -0.5f, -0.5f), default_color, n_down }
         };
 
         indices = {
@@ -84,6 +117,8 @@ namespace GEOMETRYGENERATOR {
         vertices.clear();
         indices.clear();
 
+        glm::vec3 default_color(0.8f, 0.8f, 0.8f);
+
         for (unsigned int y = 0; y <= rings; ++y) {
             for (unsigned int x = 0; x <= segments; ++x) {
                 float xSegment = (float)x / (float)segments;
@@ -93,15 +128,9 @@ namespace GEOMETRYGENERATOR {
                 float zPos = std::sin(xSegment * 2.0f * glm::pi<float>()) * std::sin(ySegment * glm::pi<float>());
 
                 glm::vec3 pos = glm::vec3(xPos, yPos, zPos) * radius;
-                
-                // Color gradient based on positions
-                glm::vec3 color = glm::vec3(
-                    0.5f + 0.5f * xPos,
-                    0.5f + 0.5f * yPos,
-                    0.5f + 0.5f * zPos
-                );
+                glm::vec3 normal = glm::normalize(glm::vec3(xPos, yPos, zPos));
 
-                vertices.push_back({ pos, color });
+                vertices.push_back({ pos, default_color, normal });
             }
         }
 

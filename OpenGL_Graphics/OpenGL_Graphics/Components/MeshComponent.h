@@ -9,6 +9,7 @@
 struct VERTEX {
     glm::vec3 _position;
     glm::vec3 _color;
+    glm::vec3 _normal;
 };
 #endif
 
