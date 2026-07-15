@@ -33,6 +33,9 @@
     <ClInclude Include="Core\GameFramework.h">
       <Filter>0. Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Core\Command.h">
+      <Filter>0. Engine</Filter>
+    </ClInclude>
     <ClInclude Include="Core\Shader.h">
       <Filter>0. Engine</Filter>
     </ClInclude>
@@ -111,6 +114,9 @@
       <Filter>0. Engine</Filter>
     </ClCompile>
     <ClCompile Include="Core\GameFramework.cpp">
+      <Filter>0. Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Core\Command.cpp">
       <Filter>0. Engine</Filter>
     </ClCompile>
     <ClCompile Include="Core\Shader.cpp">

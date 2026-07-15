@@ -121,9 +121,8 @@ void MESHCOMPONENT::render() {
     // Pass Camera Position (view position) for specular calculations
     shader->set_vec3("u_viewPos", CAMERAMANAGER::get_instance().get_position());
 
-    // Set selection highlight uniform
-    auto selected = SCENEMANAGER::get_instance().get_selected_gameobject();
-    bool is_selected = (selected.get() == _owner);
+    // Set selection highlight uniform based on whether this object is in the multi-selection list
+    bool is_selected = SCENEMANAGER::get_instance().is_selected(_owner);
     shader->set_float("u_selected", is_selected ? 1.0f : 0.0f);
 
     glBindVertexArray(_vao);

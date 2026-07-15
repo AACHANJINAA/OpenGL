@@ -8,6 +8,7 @@
 #include "CameraManager.h"
 #include "ResourceManager.h"
 #include "../Core/Shader.h"
+#include "../Core/Command.h"
 #include <algorithm>
 #include <cmath>
 
@@ -92,7 +93,42 @@ void SCENEMANAGER::update(float delta_time) {
         last_r = curr_r;
     }
 
-    // 2. Propagate updates to gameobjects
+    // 2. Check for Delete key to remove selected objects (if not typing in ImGui)
+    if (!ImGui::GetIO().WantTextInput && !_selected_gameobjects.empty()) {
+        static bool last_delete = false;
+        bool curr_delete = input.is_key_pressed(GLFW_KEY_DELETE);
+        if (curr_delete && !last_delete) {
+            // Push delete action to undo stack
+            push_undo_command(std::make_shared<DELETECOMMAND>(_selected_gameobjects));
+
+            for (const auto& go : _selected_gameobjects) {
+                go->end();
+            }
+            _gameobjects.erase(
+                std::remove_if(_gameobjects.begin(), _gameobjects.end(),
+                    [this](const std::shared_ptr<GAMEOBJECT>& go) {
+                        return std::find(_selected_gameobjects.begin(), _selected_gameobjects.end(), go) != _selected_gameobjects.end();
+                    }),
+                _gameobjects.end());
+            clear_selection();
+        }
+        last_delete = curr_delete;
+    }
+
+    // 3. Check for Ctrl + Z to Undo last action (if not typing in ImGui)
+    if (!ImGui::GetIO().WantTextInput) {
+        static bool last_ctrl_z = false;
+        bool ctrl = input.is_key_pressed(GLFW_KEY_LEFT_CONTROL) || input.is_key_pressed(GLFW_KEY_RIGHT_CONTROL);
+        bool z = input.is_key_pressed(GLFW_KEY_Z);
+        bool curr_ctrl_z = ctrl && z;
+        
+        if (curr_ctrl_z && !last_ctrl_z) {
+            undo();
+        }
+        last_ctrl_z = curr_ctrl_z;
+    }
+
+    // 4. Propagate updates to gameobjects
     for (size_t i = 0; i < _gameobjects.size(); ++i) {
         _gameobjects[i]->update(delta_time);
     }
@@ -204,15 +240,79 @@ void SCENEMANAGER::end() {
 void SCENEMANAGER::clear() {
     _gameobjects.clear();
     _selected_gameobject = nullptr;
+    _selected_gameobjects.clear();
     _tool_mode = TOOLMODE::SELECT;
 }
 
 void SCENEMANAGER::set_selected_gameobject(const std::shared_ptr<GAMEOBJECT>& go) {
     _selected_gameobject = go;
+    _selected_gameobjects.clear();
+    if (go) {
+        _selected_gameobjects.push_back(go);
+    }
 }
 
 std::shared_ptr<GAMEOBJECT> SCENEMANAGER::get_selected_gameobject() const {
     return _selected_gameobject;
+}
+
+void SCENEMANAGER::select_gameobject(const std::shared_ptr<GAMEOBJECT>& go, bool clear_others) {
+    if (clear_others) {
+        _selected_gameobjects.clear();
+    }
+    if (go) {
+        if (std::find(_selected_gameobjects.begin(), _selected_gameobjects.end(), go) == _selected_gameobjects.end()) {
+            _selected_gameobjects.push_back(go);
+        }
+        _selected_gameobject = go;
+    } else if (clear_others) {
+        _selected_gameobject = nullptr;
+    }
+}
+
+void SCENEMANAGER::select_gameobjects(const std::vector<std::shared_ptr<GAMEOBJECT>>& list) {
+    _selected_gameobjects = list;
+    if (!list.empty()) {
+        _selected_gameobject = list.back();
+    } else {
+        _selected_gameobject = nullptr;
+    }
+}
+
+void SCENEMANAGER::deselect_gameobject(const std::shared_ptr<GAMEOBJECT>& go) {
+    auto it = std::find(_selected_gameobjects.begin(), _selected_gameobjects.end(), go);
+    if (it != _selected_gameobjects.end()) {
+        _selected_gameobjects.erase(it);
+    }
+    if (_selected_gameobject == go) {
+        _selected_gameobject = _selected_gameobjects.empty() ? nullptr : _selected_gameobjects.back();
+    }
+}
+
+void SCENEMANAGER::clear_selection() {
+    _selected_gameobjects.clear();
+    _selected_gameobject = nullptr;
+}
+
+bool SCENEMANAGER::is_selected(const GAMEOBJECT* go) const {
+    for (const auto& sel : _selected_gameobjects) {
+        if (sel.get() == go) return true;
+    }
+    return false;
+}
+
+void SCENEMANAGER::push_undo_command(const std::shared_ptr<COMMAND>& cmd) {
+    _undo_stack.push_back(cmd);
+    if (_undo_stack.size() > 50) {
+        _undo_stack.erase(_undo_stack.begin());
+    }
+}
+
+void SCENEMANAGER::undo() {
+    if (!_undo_stack.empty()) {
+        _undo_stack.back()->undo();
+        _undo_stack.pop_back();
+    }
 }
 
 std::shared_ptr<GAMEOBJECT> SCENEMANAGER::raycast_closest(const glm::vec3& ray_origin, const glm::vec3& ray_dir) {
